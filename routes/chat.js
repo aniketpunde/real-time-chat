@@ -1,14 +1,9 @@
-const express = require('express');
-const { sendMessage, getMessages } = require('../controllers/chatController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const upload = require('../utils/storage');
-
+const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middlewares/authMiddleware");
 
-router.post('/message', authMiddleware, sendMessage);
-router.get('/messages', authMiddleware, getMessages);
-router.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
-  res.status(201).json({ file: req.file });
+router.get("/", authMiddleware, (req, res) => {
+  res.status(200).send("Chat endpoint");
 });
 
 module.exports = router;

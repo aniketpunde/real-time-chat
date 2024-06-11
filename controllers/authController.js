@@ -1,14 +1,16 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+require("dotenv").config();
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const secret = process.env.JWT_SECRET;
 
 exports.register = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = new User({ username, password });
-    await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
+    const newUser = new User({ username, password });
+    await newUser.save();
+    res.status(201).send("User created");
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).send(error.message);
   }
 };
 
@@ -17,11 +19,11 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
     if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).send("Invalid credentials");
     }
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: "1h" });
     res.json({ token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).send(error.message);
   }
 };
